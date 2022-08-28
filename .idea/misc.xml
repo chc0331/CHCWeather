@@ -3,9 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/admin/AndroidStudioProjects/CHCWeather/app/src/main/res/drawable/bottom_sheet_dialog_top_background.xml" value="0.28" />
         <entry key="..\:/Users/admin/AndroidStudioProjects/CHCWeather/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="..\:/Users/admin/AndroidStudioProjects/CHCWeather/app/src/main/res/layout/fragment_forecast.xml" value="0.1" />
         <entry key="..\:/Users/admin/AndroidStudioProjects/CHCWeather/app/src/main/res/layout/fragment_home.xml" value="0.1" />
+        <entry key="..\:/Users/admin/AndroidStudioProjects/CHCWeather/app/src/main/res/layout/fragment_search.xml" value="0.2657407407407407" />
+        <entry key="..\:/Users/admin/AndroidStudioProjects/CHCWeather/app/src/main/res/layout/fragment_search_detail.xml" value="0.1" />
+        <entry key="..\:/Users/admin/AndroidStudioProjects/CHCWeather/app/src/main/res/layout/item_search_result.xml" value="0.2657407407407407" />
         <entry key="..\:/Users/admin/AndroidStudioProjects/CHCWeather/app/src/main/res/layout/weather_item.xml" value="0.4466666666666667" />
         <entry key="..\:/Users/admin/AndroidStudioProjects/CHCWeather/app/src/main/res/menu/home_button_nav.xml" value="0.137109375" />
       </map>
