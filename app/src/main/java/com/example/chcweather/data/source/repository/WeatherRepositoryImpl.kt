@@ -1,20 +1,57 @@
 package com.example.chcweather.data.source.repository
 
-import com.example.chcweather.data.model.Weather
-import com.example.chcweather.data.model.WeatherForecast
+import com.example.chcweather.data.model.*
 
 class WeatherRepositoryImpl : WeatherRepository {
-    val NONE = Weather("None", "None")
     override fun getWeather(): Weather {
-        return Weather("Daegu", "Sunny")
+        val wind = Wind(2.0, 10)
+        val networkWeatherDescription =
+            NetworkWeatherDescription(0L, "Clouds", "description", "icon")
+        val networkWeatherCondition = NetworkWeatherCondition(34.0, 22.0, 10.0)
+        return Weather(
+            0,
+            0,
+            "Mountain View",
+            wind,
+            listOf(networkWeatherDescription),
+            networkWeatherCondition
+        )
     }
 
     override fun getForecastWeather(): List<WeatherForecast> {
-        return emptyList()
+        val wind = Wind(2.0, 10)
+        val networkWeatherDescription =
+            NetworkWeatherDescription(0L, "Clouds", "description", "icon")
+        val networkWeatherCondition = NetworkWeatherCondition(34.0, 22.0, 10.0)
+        return listOf(
+            WeatherForecast(
+                0, "0", wind, listOf(networkWeatherDescription),
+                networkWeatherCondition
+            ), WeatherForecast(
+                0, "0", wind, listOf(networkWeatherDescription),
+                networkWeatherCondition
+            ), WeatherForecast(
+                0, "0", wind, listOf(networkWeatherDescription),
+                networkWeatherCondition
+            ), WeatherForecast(
+                0, "0", wind, listOf(networkWeatherDescription),
+                networkWeatherCondition
+            )
+        )
     }
 
     override fun getSearchWeather(): Weather {
-        return NONE
+        val wind = Wind(2.0, 10)
+        val networkWeatherDescription = NetworkWeatherDescription(0L, "main", "description", "icon")
+        val networkWeatherCondition = NetworkWeatherCondition(36.0, 22.0, 10.0)
+        return Weather(
+            0,
+            0,
+            "Sunny",
+            wind,
+            listOf(networkWeatherDescription),
+            networkWeatherCondition
+        )
     }
 
     override fun storeWeatherData(weather: Weather) {

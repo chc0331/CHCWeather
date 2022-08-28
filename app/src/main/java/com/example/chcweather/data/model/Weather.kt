@@ -1,6 +1,10 @@
 package com.example.chcweather.data.model
 
 data class Weather(
-    val cityId: String,
+    val uId: Int,
+    val cityId: Int,
     val name: String,
+    val wind: Wind,
+    val networkWeatherDescription: List<NetworkWeatherDescription>,
+    val networkWeatherCondition: NetworkWeatherCondition
 )

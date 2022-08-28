@@ -8,5 +8,13 @@
         android:id="@+id/homeFragment"
         android:name="com.example.chcweather.ui.home.HomeFragment"
         android:label="Home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_forecastFragment"
+            app:destination="@id/forecastFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/forecastFragment"
+        android:name="com.example.chcweather.ui.forecast.ForecastFragment"
+        android:label="Forecast" />
 </navigation>

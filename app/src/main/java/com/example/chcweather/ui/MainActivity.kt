@@ -28,6 +28,8 @@ class MainActivity : AppCompatActivity() {
         navController = findNavController(R.id.mainNavFragment)
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
+
+        binding.bottomNavBar.setupWithNavController(navController)
     }
 
     override fun onSupportNavigateUp(): Boolean {

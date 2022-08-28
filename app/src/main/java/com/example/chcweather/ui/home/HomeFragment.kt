@@ -22,6 +22,7 @@ import com.google.android.material.snackbar.Snackbar
 class HomeFragment : BaseFragment() {
 
     private lateinit var binding: FragmentHomeBinding
+    private lateinit var viewModel: HomeViewModel
     private var isGPSEnabled = false
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions())
@@ -37,7 +38,6 @@ class HomeFragment : BaseFragment() {
                 ).show()
             }
         }
-    private lateinit var viewModel: HomeViewModel
 
     companion object {
         private val REQUIRED_PERMISSIONS = arrayOf(
@@ -69,11 +69,11 @@ class HomeFragment : BaseFragment() {
     private fun invokeLocationAction() {
         when {
             allPermissionsGranted() -> {
-                viewModel.fetchLocationLiveData(context)?.observeOnce(
+                viewModel?.fetchLocationLiveData(context)?.observeOnce(
                     viewLifecycleOwner
                 ) { location ->
                     if (location != null) {
-                        viewModel.getWeather(location)
+                        viewModel?.getWeather(location)
                     }
                 }
                 Log.d(TAG, "All Permissions Granted")
@@ -108,13 +108,12 @@ class HomeFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater)
+        binding.viewModel = viewModel
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        hideAllView(true)
-        observeViewModels()
         binding.apply {
             swipeRefreshId.setOnRefreshListener {
                 errorText.visibility = View.GONE
@@ -124,12 +123,15 @@ class HomeFragment : BaseFragment() {
                 swipeRefreshId.isRefreshing = false
             }
         }
+        hideAllView(true)
+        observeViewModels()
     }
 
     private fun observeViewModels() {
         with(viewModel) {
             weather.observe(viewLifecycleOwner) { weather ->
-                binding.weatherInText.text = weather.name
+                binding.weather = weather
+                binding.networkWeatherDescription = weather.networkWeatherDescription[0]
             }
 
             dataFetchState.observe(viewLifecycleOwner) { state ->
@@ -170,11 +172,11 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun initiateRefresh() {
-        viewModel.fetchLocationLiveData(context)?.observeOnce(
+        viewModel?.fetchLocationLiveData(context)?.observeOnce(
             viewLifecycleOwner
         ) { location ->
             if (location != null) {
-                viewModel.refreshWeather(location)
+                viewModel?.refreshWeather(location)
             } else {
                 hideView(true)
                 binding.apply {
@@ -184,7 +186,6 @@ class HomeFragment : BaseFragment() {
                 }
             }
         }
-
     }
 
     private fun hideAllView(state: Boolean) {
