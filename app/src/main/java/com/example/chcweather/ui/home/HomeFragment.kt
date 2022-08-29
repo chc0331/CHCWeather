@@ -12,6 +12,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.example.chcweather.R
+import com.example.chcweather.data.source.remote.WeatherRemoteDataSourceImpl
+import com.example.chcweather.data.source.remote.retrofit.WeatherService
 import com.example.chcweather.data.source.repository.WeatherRepositoryImpl
 import com.example.chcweather.databinding.FragmentHomeBinding
 import com.example.chcweather.ui.BaseFragment
@@ -57,7 +59,10 @@ class HomeFragment : BaseFragment() {
         })
         viewModel = ViewModelProvider(
             this,
-            HomeViewModelFactory(WeatherRepositoryImpl())
+            HomeViewModelFactory(
+                WeatherRepositoryImpl
+                    (WeatherRemoteDataSourceImpl(WeatherService.service))
+            )
         )[HomeViewModel::class.java]
     }
 
@@ -131,7 +136,8 @@ class HomeFragment : BaseFragment() {
         with(viewModel) {
             weather.observe(viewLifecycleOwner) { weather ->
                 binding.weather = weather
-                binding.networkWeatherDescription = weather.networkWeatherDescription[0]
+                binding.networkWeatherDescription =
+                    weather?.networkWeatherDescription?.get(0) ?: null
             }
 
             dataFetchState.observe(viewLifecycleOwner) { state ->

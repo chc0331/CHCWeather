@@ -1,6 +1,7 @@
 package com.example.chcweather.ui.home
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +9,7 @@ import com.example.chcweather.data.model.LocationModel
 import com.example.chcweather.data.model.Weather
 import com.example.chcweather.data.source.repository.WeatherRepository
 import com.example.chcweather.utils.LocationLiveData
+import com.example.chcweather.utils.Result
 import com.example.chcweather.utils.asLiveData
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -23,7 +25,7 @@ class HomeViewModel(private val repository: WeatherRepository) : ViewModel() {
     private val _dataFetchState = MutableLiveData<Boolean>()
     val dataFetchState = _dataFetchState.asLiveData()
 
-    private val _weather = MutableLiveData<Weather>()
+    private val _weather = MutableLiveData<Weather?>()
     val weather = _weather.asLiveData()
 
     fun fetchLocationLiveData(context: Context?) = context?.let { LocationLiveData(it) }
@@ -42,12 +44,23 @@ class HomeViewModel(private val repository: WeatherRepository) : ViewModel() {
     fun getWeather(location: LocationModel) {
         _isLoading.postValue(true)
         viewModelScope.launch {
-            val result = repository.getWeather()
-            _isLoading.postValue(false)
-            _dataFetchState.value = true
-            _weather.value = result
+            when (val result = repository.getWeather(location, true)) {
+                is Result.Success -> {
+                    _isLoading.postValue(false)
+                    if (result.data != null) {
+                        val weather = result.data
+                        Log.d("heec.choi","weather : "+weather.networkWeatherCondition.temp)
+                        _dataFetchState.value = true
+                        _weather.value = weather
+                    }
+                }
+                is Result.Error -> {
+                    _isLoading.value = false
+                    _dataFetchState.value = false
+                }
+                is Result.Loading -> _isLoading.postValue(true)
+            }
         }
-
     }
 
     /*

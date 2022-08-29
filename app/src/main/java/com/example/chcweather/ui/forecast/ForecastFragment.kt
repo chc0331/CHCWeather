@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
+import com.example.chcweather.data.source.remote.WeatherRemoteDataSourceImpl
+import com.example.chcweather.data.source.remote.retrofit.WeatherService
 import com.example.chcweather.data.source.repository.WeatherRepositoryImpl
 import com.example.chcweather.databinding.FragmentForecastBinding
 import com.example.chcweather.ui.BaseFragment
@@ -20,7 +22,10 @@ class ForecastFragment : BaseFragment(), WeatherForecastAdapter.ForecastOnClickL
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(
             this,
-            HomeViewModelFactory(WeatherRepositoryImpl())
+            HomeViewModelFactory(
+                WeatherRepositoryImpl
+                    (WeatherRemoteDataSourceImpl(WeatherService.service))
+            )
         )[ForecastViewModel::class.java]
     }
 
