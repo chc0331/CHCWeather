@@ -25,10 +25,10 @@ class ForecastViewModel(private val repository: WeatherRepository) : ViewModel()
     fun getWeatherForecast(cityId: Int?) {
         _isLoading.postValue(true)
         viewModelScope.launch {
-            val result = repository.getForecastWeather()
-            _isLoading.postValue(false)
-            _dataFetchState.value = true
-            _forecast.value = result
+//            val result = repository.getForecastWeather()
+//            _isLoading.postValue(false)
+//            _dataFetchState.value = true
+//            _forecast.value = result
         }
     }
 }

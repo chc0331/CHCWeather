@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
+import com.example.chcweather.data.source.local.WeatherDatabase
+import com.example.chcweather.data.source.local.WeatherLocalDataSourceImpl
 import com.example.chcweather.data.source.remote.WeatherRemoteDataSourceImpl
 import com.example.chcweather.data.source.remote.retrofit.WeatherService
 import com.example.chcweather.data.source.repository.WeatherRepositoryImpl
@@ -16,15 +18,20 @@ import com.example.chcweather.ui.home.HomeViewModelFactory
 class ForecastFragment : BaseFragment(), WeatherForecastAdapter.ForecastOnClickListener {
     private lateinit var binding: FragmentForecastBinding
     private lateinit var viewModel: ForecastViewModel
+    private lateinit var db: WeatherDatabase
     private val weatherForecastAdapter by lazy { WeatherForecastAdapter(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        db = WeatherDatabase.getInstance(requireContext().applicationContext)!!
         viewModel = ViewModelProvider(
             this,
             HomeViewModelFactory(
                 WeatherRepositoryImpl
-                    (WeatherRemoteDataSourceImpl(WeatherService.service))
+                    (
+                    WeatherRemoteDataSourceImpl(WeatherService.service),
+                    WeatherLocalDataSourceImpl(db.weatherDao)
+                )
             )
         )[ForecastViewModel::class.java]
     }

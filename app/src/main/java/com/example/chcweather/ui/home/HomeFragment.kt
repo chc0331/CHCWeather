@@ -12,6 +12,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.example.chcweather.R
+import com.example.chcweather.data.source.local.WeatherDatabase
+import com.example.chcweather.data.source.local.WeatherLocalDataSourceImpl
 import com.example.chcweather.data.source.remote.WeatherRemoteDataSourceImpl
 import com.example.chcweather.data.source.remote.retrofit.WeatherService
 import com.example.chcweather.data.source.repository.WeatherRepositoryImpl
@@ -25,6 +27,7 @@ class HomeFragment : BaseFragment() {
 
     private lateinit var binding: FragmentHomeBinding
     private lateinit var viewModel: HomeViewModel
+    private lateinit var db: WeatherDatabase
     private var isGPSEnabled = false
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions())
@@ -57,11 +60,15 @@ class HomeFragment : BaseFragment() {
                 this@HomeFragment.isGPSEnabled = isGPSEnabled
             }
         })
+        db = WeatherDatabase.getInstance(requireContext().applicationContext)!!
         viewModel = ViewModelProvider(
             this,
             HomeViewModelFactory(
                 WeatherRepositoryImpl
-                    (WeatherRemoteDataSourceImpl(WeatherService.service))
+                    (
+                    WeatherRemoteDataSourceImpl(WeatherService.service),
+                    WeatherLocalDataSourceImpl(db.weatherDao)
+                )
             )
         )[HomeViewModel::class.java]
     }
@@ -119,7 +126,7 @@ class HomeFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.apply {
+        binding.run {
             swipeRefreshId.setOnRefreshListener {
                 errorText.visibility = View.GONE
                 progressBar.visibility = View.VISIBLE

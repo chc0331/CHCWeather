@@ -1,7 +1,6 @@
 package com.example.chcweather.ui.home
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,6 +10,7 @@ import com.example.chcweather.data.source.repository.WeatherRepository
 import com.example.chcweather.utils.LocationLiveData
 import com.example.chcweather.utils.Result
 import com.example.chcweather.utils.asLiveData
+import com.example.chcweather.utils.convertKelvinToCelsius
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -30,7 +30,7 @@ class HomeViewModel(private val repository: WeatherRepository) : ViewModel() {
 
     fun fetchLocationLiveData(context: Context?) = context?.let { LocationLiveData(it) }
 
-    fun currentSystemTime(): String {
+    private fun currentSystemTime(): String {
         val currentTime = System.currentTimeMillis()
         val date = Date(currentTime)
         val dateFormat = SimpleDateFormat("EEEE MMM d, hh:mm aaa")
@@ -44,14 +44,15 @@ class HomeViewModel(private val repository: WeatherRepository) : ViewModel() {
     fun getWeather(location: LocationModel) {
         _isLoading.postValue(true)
         viewModelScope.launch {
-            when (val result = repository.getWeather(location, true)) {
+            when (val result = repository.getWeather(location, false)) {
                 is Result.Success -> {
                     _isLoading.postValue(false)
                     if (result.data != null) {
                         val weather = result.data
-                        Log.d("heec.choi","weather : "+weather.networkWeatherCondition.temp)
                         _dataFetchState.value = true
                         _weather.value = weather
+                    } else {
+                        refreshWeather(location)
                     }
                 }
                 is Result.Error -> {
@@ -67,7 +68,34 @@ class HomeViewModel(private val repository: WeatherRepository) : ViewModel() {
     * This is called when the user swipes down to refresh
     * */
     fun refreshWeather(location: LocationModel) {
+        _isLoading.postValue(true)
+        viewModelScope.launch {
+            when (val result = repository.getWeather(location, true)) {
+                is Result.Success -> {
+                    _isLoading.postValue(false)
+                    if (result.data != null) {
+                        val weather = result.data.apply {
+                            this.networkWeatherCondition.temp =
+                                convertKelvinToCelsius(this.networkWeatherCondition.temp)
+                        }
+                        _dataFetchState.value = true
+                        _weather.value = weather
 
+                        repository.deleteWeatherData()
+                        repository.storeWeatherData(weather)
+                    } else {
+                        _weather.postValue(null)
+                        _dataFetchState.postValue(false)
+                    }
+                }
+
+                is Result.Error -> {
+                    _isLoading.postValue(false)
+                    _dataFetchState.value = false
+                }
+
+                is Result.Loading -> _isLoading.postValue(true)
+            }
+        }
     }
-
 }
