@@ -17,20 +17,21 @@ abstract class WeatherDatabase : RoomDatabase() {
 
     abstract val weatherDao: WeatherDao
 
+    //Singleton
     companion object {
-        private var instance: WeatherDatabase? = null
+        @Volatile
+        private var INSTANCE: WeatherDatabase? = null
 
-        @Synchronized
-        fun getInstance(context: Context): WeatherDatabase? {
-            if (instance == null) {
-                synchronized(WeatherDatabase::class) {
-                    instance = Room.databaseBuilder(
-                        context.applicationContext,
-                        WeatherDatabase::class.java, "weather_database"
-                    ).build()
-                }
+        fun getInstance(context: Context): WeatherDatabase {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    WeatherDatabase::class.java,
+                    "weather_database"
+                ).build()
+                INSTANCE = instance
+                instance
             }
-            return instance
         }
     }
 

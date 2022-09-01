@@ -38,7 +38,7 @@ class HomeViewModel(private val repository: WeatherRepository) : ViewModel() {
     }
 
     /*
-    * This attemps to get the Weather from the local data source
+    * This attempts to get the Weather from the local data source
     * if the result is null, it gets from the remote source
     * */
     fun getWeather(location: LocationModel) {
@@ -75,8 +75,8 @@ class HomeViewModel(private val repository: WeatherRepository) : ViewModel() {
                     _isLoading.postValue(false)
                     if (result.data != null) {
                         val weather = result.data.apply {
-                            this.networkWeatherCondition.temp =
-                                convertKelvinToCelsius(this.networkWeatherCondition.temp)
+                            networkWeatherCondition.temp =
+                                convertKelvinToCelsius(networkWeatherCondition.temp)
                         }
                         _dataFetchState.value = true
                         _weather.value = weather
