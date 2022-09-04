@@ -4,9 +4,12 @@ import com.example.chcweather.data.model.LocationModel
 import com.example.chcweather.data.model.NetworkWeather
 import com.example.chcweather.data.source.remote.retrofit.WeatherApiService
 import com.example.chcweather.utils.Result
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class WeatherRemoteDataSourceImpl(private val apiService: WeatherApiService) :
+class WeatherRemoteDataSourceImpl @Inject
+constructor(private val apiService: WeatherApiService) :
     WeatherRemoteDataSource {
 
     companion object {

@@ -4,8 +4,9 @@ import com.example.chcweather.data.source.local.dao.WeatherDao
 import com.example.chcweather.data.source.local.entity.DBWeather
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class WeatherLocalDataSourceImpl(
+class WeatherLocalDataSourceImpl @Inject constructor(
     private val weatherDao: WeatherDao
 ) : WeatherLocalDataSource {
 

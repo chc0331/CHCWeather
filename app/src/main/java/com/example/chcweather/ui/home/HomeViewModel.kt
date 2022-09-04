@@ -14,8 +14,11 @@ import com.example.chcweather.utils.convertKelvinToCelsius
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
-class HomeViewModel(private val repository: WeatherRepository) : ViewModel() {
+class HomeViewModel @Inject constructor(
+    private val repository: WeatherRepository
+) : ViewModel() {
 
     val time = currentSystemTime()
 

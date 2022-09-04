@@ -9,8 +9,9 @@ import com.example.chcweather.mapper.WeatherMapperRemote
 import com.example.chcweather.utils.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class WeatherRepositoryImpl(
+class WeatherRepositoryImpl @Inject constructor(
     private val remoteDataSource: WeatherRemoteDataSource,
     private val localDataSource: WeatherLocalDataSource
 ) :

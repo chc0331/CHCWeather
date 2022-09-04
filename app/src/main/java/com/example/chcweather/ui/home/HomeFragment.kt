@@ -10,28 +10,28 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
 import com.example.chcweather.R
 import com.example.chcweather.data.source.local.WeatherDatabase
-import com.example.chcweather.data.source.local.WeatherLocalDataSource
-import com.example.chcweather.data.source.local.WeatherLocalDataSourceImpl
-import com.example.chcweather.data.source.remote.WeatherRemoteDataSource
-import com.example.chcweather.data.source.remote.WeatherRemoteDataSourceImpl
-import com.example.chcweather.data.source.remote.retrofit.WeatherService
-import com.example.chcweather.data.source.repository.WeatherRepositoryImpl
+import com.example.chcweather.data.source.repository.WeatherRepository
 import com.example.chcweather.databinding.FragmentHomeBinding
 import com.example.chcweather.ui.BaseFragment
 import com.example.chcweather.utils.GpsUtil
 import com.example.chcweather.utils.observeOnce
 import com.google.android.material.snackbar.Snackbar
+import javax.inject.Inject
 
 class HomeFragment : BaseFragment() {
 
+    @Inject
+    lateinit var viewModel: HomeViewModel
+
+    @Inject
+    lateinit var database: WeatherDatabase
+
+    @Inject
+    lateinit var weatherRepository: WeatherRepository
+
     private lateinit var binding: FragmentHomeBinding
-    private lateinit var viewModel: HomeViewModel
-    private lateinit var database: WeatherDatabase
-    private lateinit var localDataSource: WeatherLocalDataSource
-    private lateinit var remoteDataSource: WeatherRemoteDataSource
     private var isGPSEnabled = false
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions())
@@ -64,15 +64,6 @@ class HomeFragment : BaseFragment() {
                 this@HomeFragment.isGPSEnabled = isGPSEnabled
             }
         })
-        database = WeatherDatabase.getInstance(requireContext().applicationContext)
-        localDataSource = WeatherLocalDataSourceImpl(database.weatherDao)
-        remoteDataSource = WeatherRemoteDataSourceImpl(WeatherService.service)
-
-        val weatherRepository = WeatherRepositoryImpl(remoteDataSource, localDataSource)
-        viewModel = ViewModelProvider(
-            this,
-            HomeViewModelFactory(weatherRepository)
-        )[HomeViewModel::class.java]
     }
 
     override fun onStart() {
