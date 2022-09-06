@@ -53,10 +53,8 @@ class ForecastFragment : BaseFragment(), WeatherForecastAdapter.ForecastOnClickL
                 location?.let { viewModel.getWeatherForecast(it) }
             }
 
-            forecast.observe(viewLifecycleOwner) { weatherForeast ->
-                weatherForeast?.let {
-                    weatherForecastAdapter.submitList(it)
-                }
+            forecast.observe(viewLifecycleOwner) {
+                weatherForecastAdapter.submitList(it)
             }
 
             dataFetchState.observe(viewLifecycleOwner) { state ->
@@ -76,7 +74,21 @@ class ForecastFragment : BaseFragment(), WeatherForecastAdapter.ForecastOnClickL
             }
         }
         binding.forecastSwipeRefresh.setOnRefreshListener {
-//            initiateRefresh()
+            initiateRefresh()
+        }
+    }
+
+    private fun initiateRefresh() {
+        binding.run {
+            forecastErrorText.visibility = View.GONE
+            forecastProgressBar.visibility = View.VISIBLE
+            forecastRecyclerview.visibility = View.GONE
+            forecastSwipeRefresh.isRefreshing = false
+            viewModel.fetchLocationLiveData(context)?.observeOnce(
+                viewLifecycleOwner
+            ) { location ->
+                location?.let { viewModel.refreshForecastData(it) }
+            }
         }
 
     }

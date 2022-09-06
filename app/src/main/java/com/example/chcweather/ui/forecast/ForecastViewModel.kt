@@ -7,9 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.chcweather.data.model.LocationModel
 import com.example.chcweather.data.model.WeatherForecast
 import com.example.chcweather.data.source.repository.WeatherRepository
-import com.example.chcweather.utils.LocationLiveData
-import com.example.chcweather.utils.Result
-import com.example.chcweather.utils.asLiveData
+import com.example.chcweather.utils.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -45,6 +43,36 @@ class ForecastViewModel @Inject constructor(
                 }
                 is Result.Loading -> _isLoading.postValue(true)
                 else -> {}
+            }
+        }
+    }
+
+    fun refreshForecastData(location: LocationModel) {
+        _isLoading.postValue(true)
+        viewModelScope.launch {
+            when (val result = repository.getForecastWeather(location, true)) {
+                is Result.Success -> {
+                    _isLoading.postValue(false)
+                    if (result.data != null) {
+                        val forecast = result.data.onEach { forecast ->
+                            forecast.networkWeatherCondition.temp =
+                                convertKelvinToCelsius(forecast.networkWeatherCondition.temp)
+                            forecast.date = forecast.date.formatDate()
+                        }
+                        _forecast.postValue(forecast)
+                        _dataFetchState.postValue(true)
+                    } else {
+                        _dataFetchState.postValue(false)
+                        _forecast.postValue(null)
+                    }
+                }
+
+                is Result.Error -> {
+                    _dataFetchState.value = false
+                    _isLoading.postValue(false)
+                }
+
+                is Result.Loading -> _isLoading.postValue(true)
             }
         }
     }
