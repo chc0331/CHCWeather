@@ -2,6 +2,7 @@ package com.example.chcweather.data.source.remote
 
 import com.example.chcweather.data.model.LocationModel
 import com.example.chcweather.data.model.NetworkWeather
+import com.example.chcweather.data.model.NetworkWeatherForecast
 import com.example.chcweather.data.source.remote.retrofit.WeatherApiService
 import com.example.chcweather.utils.Result
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +26,27 @@ constructor(private val apiService: WeatherApiService) :
                 if (result.isSuccessful) {
                     val networkWeather = result.body()
                     Result.Success(networkWeather)
+                } else {
+                    Result.Success(null)
+                }
+            } catch (exception: Exception) {
+                Result.Error(exception)
+            }
+        }
+
+    override suspend fun getWeatherForecast(location: LocationModel): Result<List<NetworkWeatherForecast>> =
+        withContext(Dispatchers.IO) {
+            return@withContext try {
+                val result = apiService.getWeatherForecast(
+                    location.latitude, location.longitude,
+                    API_KEY
+                )
+                if (result.isSuccessful) {
+                    val networkWeatherForecastResponse = result.body()
+                    if (networkWeatherForecastResponse == null)
+                        Result.Success(null)
+                    else
+                        Result.Success(networkWeatherForecastResponse.weathers)
                 } else {
                     Result.Success(null)
                 }

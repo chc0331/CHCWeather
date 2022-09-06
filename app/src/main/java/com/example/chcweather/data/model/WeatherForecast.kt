@@ -2,8 +2,8 @@ package com.example.chcweather.data.model
 
 data class WeatherForecast(
     val uID: Int,
-    var date: String,
-    var wind: Wind,
+    val networkWeatherCondition: NetworkWeatherCondition,
     val networkWeatherDescription: List<NetworkWeatherDescription>,
-    val networkWeatherCondition: NetworkWeatherCondition
+    var wind: Wind,
+    var date: String
 )

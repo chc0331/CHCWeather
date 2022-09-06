@@ -6,33 +6,25 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
-import com.example.chcweather.data.source.local.WeatherDatabase
-import com.example.chcweather.data.source.local.WeatherLocalDataSourceImpl
-import com.example.chcweather.data.source.remote.WeatherRemoteDataSourceImpl
-import com.example.chcweather.data.source.remote.retrofit.WeatherService
-import com.example.chcweather.data.source.repository.WeatherRepositoryImpl
 import com.example.chcweather.databinding.FragmentForecastBinding
 import com.example.chcweather.ui.BaseFragment
-import com.example.chcweather.ui.home.HomeViewModelFactory
+import com.example.chcweather.ui.home.ViewModelFactory
+import com.example.chcweather.utils.observeOnce
+import javax.inject.Inject
 
 class ForecastFragment : BaseFragment(), WeatherForecastAdapter.ForecastOnClickListener {
+
+    @Inject
+    lateinit var factory: ViewModelFactory
     private lateinit var binding: FragmentForecastBinding
     private lateinit var viewModel: ForecastViewModel
-    private lateinit var db: WeatherDatabase
     private val weatherForecastAdapter by lazy { WeatherForecastAdapter(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        db = WeatherDatabase.getInstance(requireContext().applicationContext)!!
         viewModel = ViewModelProvider(
-            this,
-            HomeViewModelFactory(
-                WeatherRepositoryImpl
-                    (
-                    WeatherRemoteDataSourceImpl(WeatherService.service),
-                    WeatherLocalDataSourceImpl(db.weatherDao)
-                )
-            )
+            this@ForecastFragment,
+            factory
         )[ForecastViewModel::class.java]
     }
 
@@ -47,14 +39,20 @@ class ForecastFragment : BaseFragment(), WeatherForecastAdapter.ForecastOnClickL
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupCalendar()
         binding.forecastRecyclerview.adapter = weatherForecastAdapter
-        viewModel.getWeatherForecast(0)
         observeMoreViewModels()
+        setupCalendar()
     }
 
     private fun observeMoreViewModels() {
         with(viewModel) {
+
+            viewModel.fetchLocationLiveData(context)?.observeOnce(
+                viewLifecycleOwner
+            ) { location ->
+                location?.let { viewModel.getWeatherForecast(it) }
+            }
+
             forecast.observe(viewLifecycleOwner) { weatherForeast ->
                 weatherForeast?.let {
                     weatherForecastAdapter.submitList(it)

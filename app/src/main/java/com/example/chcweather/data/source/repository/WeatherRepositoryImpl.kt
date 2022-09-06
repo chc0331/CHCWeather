@@ -2,8 +2,10 @@ package com.example.chcweather.data.source.repository
 
 import com.example.chcweather.data.model.LocationModel
 import com.example.chcweather.data.model.Weather
+import com.example.chcweather.data.model.WeatherForecast
 import com.example.chcweather.data.source.local.WeatherLocalDataSource
 import com.example.chcweather.data.source.remote.WeatherRemoteDataSource
+import com.example.chcweather.mapper.WeatherForecastMapperRemote
 import com.example.chcweather.mapper.WeatherMapperLocal
 import com.example.chcweather.mapper.WeatherMapperRemote
 import com.example.chcweather.utils.Result
@@ -14,8 +16,7 @@ import javax.inject.Inject
 class WeatherRepositoryImpl @Inject constructor(
     private val remoteDataSource: WeatherRemoteDataSource,
     private val localDataSource: WeatherLocalDataSource
-) :
-    WeatherRepository {
+) : WeatherRepository {
 
     override suspend fun getWeather(location: LocationModel, refresh: Boolean): Result<Weather?> =
         withContext(Dispatchers.IO) {
@@ -52,5 +53,38 @@ class WeatherRepositoryImpl @Inject constructor(
 
     override suspend fun deleteWeatherData() {
         localDataSource.deleteWeather()
+    }
+
+    override suspend fun getForecastWeather(
+        location: LocationModel,
+        refresh: Boolean
+    ): Result<List<WeatherForecast>?> =
+        withContext(Dispatchers.IO) {
+            if (refresh) {
+                val mapper = WeatherForecastMapperRemote()
+                when (val response = remoteDataSource.getWeatherForecast(location)) {
+                    is Result.Success -> {
+                        if (response.data != null) {
+                            Result.Success(mapper.transformToDomain(response.data))
+                        } else {
+                            Result.Success(null)
+                        }
+                    }
+                    is Result.Error -> {
+                        Result.Error(response.exception)
+                    }
+                    else -> Result.Loading
+                }
+            } else {
+                Result.Success(null)
+            }
+        }
+
+    override suspend fun storeForecastData(forecasts: List<WeatherForecast>) {
+
+    }
+
+    override suspend fun deleteForecastData() {
+
     }
 }

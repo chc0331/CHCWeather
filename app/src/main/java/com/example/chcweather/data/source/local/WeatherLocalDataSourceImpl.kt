@@ -2,6 +2,7 @@ package com.example.chcweather.data.source.local
 
 import com.example.chcweather.data.source.local.dao.WeatherDao
 import com.example.chcweather.data.source.local.entity.DBWeather
+import com.example.chcweather.data.source.local.entity.DBWeatherForecast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -20,5 +21,17 @@ class WeatherLocalDataSourceImpl @Inject constructor(
 
     override suspend fun deleteWeather() = withContext(Dispatchers.IO) {
         weatherDao.deleteAllWeather()
+    }
+
+    override suspend fun getForecastWeather(): List<DBWeatherForecast>? {
+        return null
+    }
+
+    override suspend fun saveForecastWeather(weatherForecast: DBWeatherForecast) {
+
+    }
+
+    override suspend fun deleteForecastWeather() {
+
     }
 }

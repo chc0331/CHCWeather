@@ -4,13 +4,22 @@ import com.example.chcweather.data.source.remote.retrofit.WeatherApiService
 import com.example.chcweather.data.source.remote.retrofit.WeatherService
 import dagger.Module
 import dagger.Provides
-import javax.inject.Singleton
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 @Module
 class RetrofitModule {
 
-    @Singleton
     @Provides
-    fun provideApiService(): WeatherApiService =
-        WeatherService.service
+    fun provideRetrofit(): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(WeatherService.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+    @Provides
+    fun provideApiService(retrofit: Retrofit): WeatherApiService {
+        return retrofit.create(WeatherApiService::class.java)
+    }
 }

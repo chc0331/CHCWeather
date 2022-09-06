@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import com.example.chcweather.R
 import com.example.chcweather.data.source.local.WeatherDatabase
 import com.example.chcweather.data.source.repository.WeatherRepository
@@ -23,7 +24,7 @@ import javax.inject.Inject
 class HomeFragment : BaseFragment() {
 
     @Inject
-    lateinit var viewModel: HomeViewModel
+    lateinit var factory: ViewModelProvider.Factory
 
     @Inject
     lateinit var database: WeatherDatabase
@@ -31,6 +32,7 @@ class HomeFragment : BaseFragment() {
     @Inject
     lateinit var weatherRepository: WeatherRepository
 
+    private lateinit var viewModel: HomeViewModel
     private lateinit var binding: FragmentHomeBinding
     private var isGPSEnabled = false
     private val requestPermissionLauncher =
@@ -64,6 +66,10 @@ class HomeFragment : BaseFragment() {
                 this@HomeFragment.isGPSEnabled = isGPSEnabled
             }
         })
+        viewModel = ViewModelProvider(
+            this@HomeFragment,
+            factory
+        )[HomeViewModel::class.java]
     }
 
     override fun onStart() {

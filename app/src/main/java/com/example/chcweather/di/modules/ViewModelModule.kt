@@ -2,6 +2,7 @@ package com.example.chcweather.di.modules
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.chcweather.ui.forecast.ForecastViewModel
 import com.example.chcweather.ui.home.HomeViewModel
 import com.example.chcweather.utils.ViewModelFactory
 import com.example.chcweather.utils.ViewModelKey
@@ -18,5 +19,10 @@ abstract class ViewModelModule {
     @Binds
     @IntoMap
     @ViewModelKey(HomeViewModel::class)
-    abstract fun bindSplashViewModel(viewModel: HomeViewModel): ViewModel
+    abstract fun bindHomeViewModel(viewModel: HomeViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ForecastViewModel::class)
+    abstract fun bindForecastViewModel(viewModel: ForecastViewModel): ViewModel
 }
