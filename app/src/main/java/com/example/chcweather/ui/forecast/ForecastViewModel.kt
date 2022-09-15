@@ -36,7 +36,11 @@ class ForecastViewModel @Inject constructor(
                 is Result.Success -> {
                     _isLoading.postValue(false)
                     if (!result.data.isNullOrEmpty()) {
-                        val forecasts = result.data
+                        val forecasts = result.data.onEach { forecast ->
+                            forecast.networkWeatherCondition.temp =
+                                convertKelvinToCelsius(forecast.networkWeatherCondition.temp)
+                            forecast.date = forecast.date.formatDate()
+                        }
                         _dataFetchState.value = true
                         _forecast.value = forecasts
                     }

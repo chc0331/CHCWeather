@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.*
 import com.example.chcweather.data.model.LocationModel
 import com.example.chcweather.data.model.Weather
 import com.example.chcweather.data.source.repository.WeatherRepository
@@ -11,9 +12,11 @@ import com.example.chcweather.utils.LocationLiveData
 import com.example.chcweather.utils.Result
 import com.example.chcweather.utils.asLiveData
 import com.example.chcweather.utils.convertKelvinToCelsius
+import com.example.chcweather.worker.UpdateWeatherWorker
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class HomeViewModel @Inject constructor(
@@ -100,5 +103,23 @@ class HomeViewModel @Inject constructor(
                 is Result.Loading -> _isLoading.postValue(true)
             }
         }
+    }
+
+    fun setupWorkManager(context: Context) {
+        val workManager = WorkManager.getInstance(context)
+        val constraint = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val weatherUpdateRequest =
+            PeriodicWorkRequestBuilder<UpdateWeatherWorker>(15, TimeUnit.MINUTES)
+                .setConstraints(constraint)
+//                .setInitialDelay(6, TimeUnit.HOURS)
+                .build()
+        workManager.cancelAllWork()
+        workManager.enqueueUniquePeriodicWork(
+            "Update_weather_worker",
+            ExistingPeriodicWorkPolicy.REPLACE, weatherUpdateRequest
+        )
     }
 }

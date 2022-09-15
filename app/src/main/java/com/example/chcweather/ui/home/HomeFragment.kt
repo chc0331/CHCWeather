@@ -17,6 +17,7 @@ import com.example.chcweather.data.source.repository.WeatherRepository
 import com.example.chcweather.databinding.FragmentHomeBinding
 import com.example.chcweather.ui.BaseFragment
 import com.example.chcweather.utils.GpsUtil
+import com.example.chcweather.utils.SharedPreferenceHelper
 import com.example.chcweather.utils.observeOnce
 import com.google.android.material.snackbar.Snackbar
 import javax.inject.Inject
@@ -31,6 +32,9 @@ class HomeFragment : BaseFragment() {
 
     @Inject
     lateinit var weatherRepository: WeatherRepository
+
+    @Inject
+    lateinit var prefs: SharedPreferenceHelper
 
     private lateinit var viewModel: HomeViewModel
     private lateinit var binding: FragmentHomeBinding
@@ -83,7 +87,10 @@ class HomeFragment : BaseFragment() {
                 viewModel.fetchLocationLiveData(context)?.observeOnce(
                     viewLifecycleOwner
                 ) { location ->
-                    location?.let { viewModel.getWeather(it) }
+                    location?.let {
+                        viewModel.getWeather(it)
+                        setupWorkManager()
+                    }
                 }
                 Log.d(TAG, "All Permissions Granted")
             }
@@ -186,6 +193,7 @@ class HomeFragment : BaseFragment() {
         viewModel.fetchLocationLiveData(context)?.observeOnce(
             viewLifecycleOwner
         ) { location ->
+            prefs.saveLocation(location)
             viewModel.refreshWeather(location)
         }
     }
@@ -224,6 +232,13 @@ class HomeFragment : BaseFragment() {
     //권한요청을 처음 보거나, 다시 묻지 않음 선택한 경우, 권한을 허용한 경우 false를 반환
     private fun shouldShowRequestPermissionRationale() = REQUIRED_PERMISSIONS.all {
         shouldShowRequestPermissionRationale(it)
+    }
+
+    private fun setupWorkManager() {
+        viewModel.fetchLocationLiveData(context)?.observeOnce(
+            this
+        ) { prefs.saveLocation(it) }
+        viewModel.setupWorkManager(requireContext())
     }
 
 }

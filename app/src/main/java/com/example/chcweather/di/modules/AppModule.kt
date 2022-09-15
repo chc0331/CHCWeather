@@ -10,7 +10,8 @@ import dagger.android.AndroidInjectionModule
         ViewModelModule::class,
         DatabaseModule::class,
         RetrofitModule::class,
-        RepositoryModule::class]
+        RepositoryModule::class,
+        SharedPrefsModule::class]
 )
 class AppModule {
 }
