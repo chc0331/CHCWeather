@@ -20,6 +20,9 @@ import com.example.chcweather.utils.GpsUtil
 import com.example.chcweather.utils.SharedPreferenceHelper
 import com.example.chcweather.utils.observeOnce
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import javax.inject.Inject
 
 class HomeFragment : BaseFragment() {
@@ -36,6 +39,8 @@ class HomeFragment : BaseFragment() {
     @Inject
     lateinit var prefs: SharedPreferenceHelper
 
+
+    private lateinit var uiScope: CoroutineScope
     private lateinit var viewModel: HomeViewModel
     private lateinit var binding: FragmentHomeBinding
     private var isGPSEnabled = false
@@ -160,7 +165,9 @@ class HomeFragment : BaseFragment() {
                     viewLifecycleOwner
                 ) { location ->
                     location?.let {
-                        viewModel.getWeather(it)
+                        if (uiScope == null)
+                            uiScope = CoroutineScope(Dispatchers.Main)
+                        viewModel.getWeather(it, uiScope)
                         setupWorkManager()
                     }
                 }
@@ -194,9 +201,16 @@ class HomeFragment : BaseFragment() {
         viewModel.fetchLocationLiveData(context)?.observeOnce(
             viewLifecycleOwner
         ) { location ->
+            if (uiScope == null)
+                uiScope = CoroutineScope(Dispatchers.Main)
             prefs.saveLocation(location)
-            viewModel.refreshWeather(location)
+            viewModel.refreshWeather(location, uiScope)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        uiScope.cancel()
     }
 
     private fun hideAllView(hide: Boolean) {

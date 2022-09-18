@@ -13,7 +13,6 @@ import com.example.chcweather.utils.asLiveData
 import com.example.chcweather.utils.convertKelvinToCelsius
 import com.example.chcweather.worker.UpdateWeatherWorker
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -48,9 +47,9 @@ class HomeViewModel @Inject constructor(
     * This attempts to get the Weather from the local data source
     * if the result is null, it gets from the remote source
     * */
-    fun getWeather(location: LocationModel) {
+    fun getWeather(location: LocationModel, uiScope: CoroutineScope) {
         _isLoading.postValue(true)
-        CoroutineScope(Dispatchers.Main).launch {
+        uiScope.launch {
             when (val result = repository.getWeather(location, false)) {
                 is Result.Success -> {
                     _isLoading.postValue(false)
@@ -59,7 +58,7 @@ class HomeViewModel @Inject constructor(
                         _dataFetchState.value = true
                         _weather.value = weather
                     } else {
-                        refreshWeather(location)
+                        refreshWeather(location, uiScope)
                     }
                 }
                 is Result.Error -> {
@@ -74,9 +73,9 @@ class HomeViewModel @Inject constructor(
     /*
     * This is called when the user swipes down to refresh
     * */
-    fun refreshWeather(location: LocationModel) {
+    fun refreshWeather(location: LocationModel, uiScope: CoroutineScope) {
         _isLoading.postValue(true)
-        CoroutineScope(Dispatchers.Main).launch {
+        uiScope.launch {
             when (val result = repository.getWeather(location, true)) {
                 is Result.Success -> {
                     _isLoading.postValue(false)
