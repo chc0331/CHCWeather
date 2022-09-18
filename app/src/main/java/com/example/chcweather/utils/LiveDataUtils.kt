@@ -14,9 +14,9 @@ fun <T> MutableLiveData<T>.asLiveData() = this as LiveData<T>
 /**
  * This function helps to observe a [LiveData] once
  */
-fun <T> LiveData<T>.observeOnce(lifecyleOwner: LifecycleOwner, observer: Observer<T>) {
+fun <T> LiveData<T>.observeOnce(lifecycleOwner: LifecycleOwner, observer: Observer<T>) {
     observe(
-        lifecyleOwner,
+        lifecycleOwner,
         object : Observer<T> {
             override fun onChanged(t: T) {
                 observer.onChanged(t)

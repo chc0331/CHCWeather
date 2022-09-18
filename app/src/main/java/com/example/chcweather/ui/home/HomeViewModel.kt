@@ -3,7 +3,6 @@ package com.example.chcweather.ui.home
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.work.*
 import com.example.chcweather.data.model.LocationModel
 import com.example.chcweather.data.model.Weather
@@ -13,6 +12,8 @@ import com.example.chcweather.utils.Result
 import com.example.chcweather.utils.asLiveData
 import com.example.chcweather.utils.convertKelvinToCelsius
 import com.example.chcweather.worker.UpdateWeatherWorker
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -49,7 +50,7 @@ class HomeViewModel @Inject constructor(
     * */
     fun getWeather(location: LocationModel) {
         _isLoading.postValue(true)
-        viewModelScope.launch {
+        CoroutineScope(Dispatchers.Main).launch {
             when (val result = repository.getWeather(location, false)) {
                 is Result.Success -> {
                     _isLoading.postValue(false)
@@ -75,7 +76,7 @@ class HomeViewModel @Inject constructor(
     * */
     fun refreshWeather(location: LocationModel) {
         _isLoading.postValue(true)
-        viewModelScope.launch {
+        CoroutineScope(Dispatchers.Main).launch {
             when (val result = repository.getWeather(location, true)) {
                 is Result.Success -> {
                     _isLoading.postValue(false)

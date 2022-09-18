@@ -70,10 +70,6 @@ class HomeFragment : BaseFragment() {
                 this@HomeFragment.isGPSEnabled = isGPSEnabled
             }
         })
-        viewModel = ViewModelProvider(
-            this@HomeFragment,
-            factory
-        )[HomeViewModel::class.java]
     }
 
     override fun onStart() {
@@ -81,48 +77,15 @@ class HomeFragment : BaseFragment() {
         invokeLocationAction()
     }
 
-    private fun invokeLocationAction() {
-        when {
-            allPermissionsGranted() -> {
-                viewModel.fetchLocationLiveData(context)?.observeOnce(
-                    viewLifecycleOwner
-                ) { location ->
-                    location?.let {
-                        viewModel.getWeather(it)
-                        setupWorkManager()
-                    }
-                }
-                Log.d(TAG, "All Permissions Granted")
-            }
-
-            //사용자가 이전에 권한 요청을 거부한 경우 true를 반환
-            shouldShowRequestPermissionRationale() -> {
-                AlertDialog.Builder(requireContext())
-                    .setTitle(getString(R.string.location_permission))
-                    .setMessage(getString(R.string.access_location_message))
-                    .setNegativeButton(getString(R.string.no)) { _, _ ->
-                        requireActivity().finish()
-                    }.setPositiveButton(getString(R.string.ask_me)) { _, _ ->
-                        requestPermissionLauncher.launch(REQUIRED_PERMISSIONS)
-                    }.show()
-            }
-
-            !isGPSEnabled -> {
-                showShortSnackBar(getString(R.string.gps_required_message))
-            }
-
-            else -> {
-                requestPermissionLauncher.launch(REQUIRED_PERMISSIONS)
-                Log.d(TAG, "Permissions rejected")
-            }
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        viewModel = ViewModelProvider(
+            this@HomeFragment,
+            factory
+        )[HomeViewModel::class.java]
         binding = FragmentHomeBinding.inflate(inflater).apply {
             vm = viewModel
             swipeRefreshId.setOnRefreshListener {
@@ -189,6 +152,44 @@ class HomeFragment : BaseFragment() {
         }
     }
 
+
+    private fun invokeLocationAction() {
+        when {
+            allPermissionsGranted() -> {
+                viewModel.fetchLocationLiveData(context)?.observeOnce(
+                    viewLifecycleOwner
+                ) { location ->
+                    location?.let {
+                        viewModel.getWeather(it)
+                        setupWorkManager()
+                    }
+                }
+                Log.d(TAG, "All Permissions Granted")
+            }
+
+            //사용자가 이전에 권한 요청을 거부한 경우 true를 반환
+            shouldShowRequestPermissionRationale() -> {
+                AlertDialog.Builder(requireContext())
+                    .setTitle(getString(R.string.location_permission))
+                    .setMessage(getString(R.string.access_location_message))
+                    .setNegativeButton(getString(R.string.no)) { _, _ ->
+                        requireActivity().finish()
+                    }.setPositiveButton(getString(R.string.ask_me)) { _, _ ->
+                        requestPermissionLauncher.launch(REQUIRED_PERMISSIONS)
+                    }.show()
+            }
+
+            !isGPSEnabled -> {
+                showShortSnackBar(getString(R.string.gps_required_message))
+            }
+
+            else -> {
+                requestPermissionLauncher.launch(REQUIRED_PERMISSIONS)
+                Log.d(TAG, "Permissions rejected")
+            }
+        }
+    }
+
     private fun initiateRefresh() {
         viewModel.fetchLocationLiveData(context)?.observeOnce(
             viewLifecycleOwner
@@ -235,10 +236,12 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun setupWorkManager() {
-        viewModel.fetchLocationLiveData(context)?.observeOnce(
-            this
-        ) { prefs.saveLocation(it) }
-        viewModel.setupWorkManager(requireContext())
+        viewModel.run {
+            fetchLocationLiveData(context)?.observeOnce(this@HomeFragment) {
+                prefs.saveLocation(it)
+            }
+            setupWorkManager(requireContext())
+        }
     }
 
 }
