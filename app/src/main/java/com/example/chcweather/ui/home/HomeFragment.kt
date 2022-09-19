@@ -39,8 +39,7 @@ class HomeFragment : BaseFragment() {
     @Inject
     lateinit var prefs: SharedPreferenceHelper
 
-
-    private lateinit var uiScope: CoroutineScope
+    private val uiScope: CoroutineScope by lazy { CoroutineScope(Dispatchers.Main) }
     private lateinit var viewModel: HomeViewModel
     private lateinit var binding: FragmentHomeBinding
     private var isGPSEnabled = false
@@ -165,8 +164,6 @@ class HomeFragment : BaseFragment() {
                     viewLifecycleOwner
                 ) { location ->
                     location?.let {
-                        if (uiScope == null)
-                            uiScope = CoroutineScope(Dispatchers.Main)
                         viewModel.getWeather(it, uiScope)
                         setupWorkManager()
                     }
@@ -201,8 +198,6 @@ class HomeFragment : BaseFragment() {
         viewModel.fetchLocationLiveData(context)?.observeOnce(
             viewLifecycleOwner
         ) { location ->
-            if (uiScope == null)
-                uiScope = CoroutineScope(Dispatchers.Main)
             prefs.saveLocation(location)
             viewModel.refreshWeather(location, uiScope)
         }

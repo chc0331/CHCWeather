@@ -10,4 +10,6 @@ interface WeatherRemoteDataSource {
 
     suspend fun getWeatherForecast(location: LocationModel): Result<List<NetworkWeatherForecast>>
 
+    suspend fun getSearchWeather(query: String): Result<NetworkWeather>
+
 }

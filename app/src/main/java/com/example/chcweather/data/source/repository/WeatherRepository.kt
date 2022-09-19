@@ -13,10 +13,15 @@ interface WeatherRepository {
 
     suspend fun deleteWeatherData()
 
-    suspend fun getForecastWeather(location: LocationModel, refresh: Boolean): Result<List<WeatherForecast>?>
+    suspend fun getForecastWeather(
+        location: LocationModel,
+        refresh: Boolean
+    ): Result<List<WeatherForecast>?>
 
     suspend fun storeForecastData(forecasts: List<WeatherForecast>)
 
     suspend fun deleteForecastData()
+
+    suspend fun getSearchWeather(location: String): Result<Weather?>
 
 }

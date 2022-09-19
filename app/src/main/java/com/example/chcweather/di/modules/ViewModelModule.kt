@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.chcweather.ui.forecast.ForecastViewModel
 import com.example.chcweather.ui.home.HomeViewModel
+import com.example.chcweather.ui.search.SearchViewModel
 import com.example.chcweather.utils.ViewModelFactory
 import com.example.chcweather.utils.ViewModelKey
 import dagger.Binds
@@ -25,4 +26,9 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(ForecastViewModel::class)
     abstract fun bindForecastViewModel(viewModel: ForecastViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SearchViewModel::class)
+    abstract fun bindSearchViewModel(viewModel: SearchViewModel): ViewModel
 }

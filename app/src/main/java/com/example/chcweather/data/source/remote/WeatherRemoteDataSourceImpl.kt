@@ -54,4 +54,19 @@ constructor(private val apiService: WeatherApiService) :
                 Result.Error(exception)
             }
         }
+
+    override suspend fun getSearchWeather(query: String): Result<NetworkWeather> =
+        withContext(Dispatchers.IO) {
+            return@withContext try {
+                val result = apiService.getSearchWeather(query, API_KEY)
+                if (result.isSuccessful) {
+                    val networkWeather = result.body()
+                    Result.Success(networkWeather)
+                } else {
+                    Result.Success(null)
+                }
+            } catch (exception: Exception) {
+                Result.Error(exception)
+            }
+        }
 }

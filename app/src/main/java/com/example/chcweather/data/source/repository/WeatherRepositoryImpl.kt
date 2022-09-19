@@ -87,4 +87,24 @@ class WeatherRepositoryImpl @Inject constructor(
     override suspend fun deleteForecastData() {
 
     }
+
+    override suspend fun getSearchWeather(location: String): Result<Weather?> =
+        withContext(Dispatchers.IO) {
+            val mapper = WeatherMapperRemote()
+            return@withContext when (val response = remoteDataSource.getSearchWeather(location)) {
+                is Result.Success -> {
+                    if (response.data != null) {
+                        Result.Success(mapper.transformToDomain(response.data))
+                    } else {
+                        Result.Success(null)
+                    }
+                }
+                is Result.Error -> {
+                    Result.Error(response.exception)
+                }
+                else -> {
+                    Result.Loading
+                }
+            }
+        }
 }
