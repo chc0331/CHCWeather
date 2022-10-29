@@ -20,7 +20,7 @@ What to learn : MVVM 패턴에 Coroutine과 Dagger2를 접목시켜 스킬 향�
 ## Used skills
 * AAC(Android Architecture Components) : LiveData, ViewModel, Room, DataBinding, WorkManager 사용
 * Dagger2 : Dependency Injection을 사용하기 위해 Dagger2를 사용
-* Coroutine : Remote/Local 데이터를 처리하는 과정에서 비동기 구현을 위해 Coroutine 사용
+* Coroutine/Flow : Remote/Local 데이터를 처리하는 과정에서 비동기 구현을 위해 Coroutine 사용
 * Retrofit : Remote Data를 가져오기 위해 Retrofit API 사용
 
 ## Result
