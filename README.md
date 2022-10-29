@@ -3,7 +3,7 @@
 
 ## Description
 주제 : Open Source를 참고해 OpenWeather API를 이용한 기상 예보 APP 개발   
-목적 : MVVM 패턴에 코루틴과 Dagger2를 접목시켜 해당 기술에 대한 스킬 향상 
+목적 : MVVM 패턴에 Coroutine과 Dagger2를 접목시켜 스킬 향상
 
 ## Architecture
 
@@ -24,5 +24,7 @@
 ## Result
 ![image](https://user-images.githubusercontent.com/49948533/198836112-7d0b925a-d689-404f-8a80-a09a6cee57da.png)
 ![image](https://user-images.githubusercontent.com/49948533/198836128-51b71678-5334-4794-850d-d5bfb72c7e23.png)
+![image](https://user-images.githubusercontent.com/49948533/198836506-e54dd10f-1cf5-4f26-a015-2507ef38c634.png)
+
 
 
