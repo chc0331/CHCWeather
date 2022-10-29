@@ -2,7 +2,7 @@
 <hr/>
 
 ## Description
-주제 : Android Open source를 참고해 OpenWeather API를 이용한 기상 예보 APP 개발   
+주제 : Open Source를 참고해 OpenWeather API를 이용한 기상 예보 APP 개발   
 목적 : MVVM 패턴에 코루틴과 Dagger2를 접목시켜 해당 기술에 대한 스킬 향상 
 
 ## Architecture
